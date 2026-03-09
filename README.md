@@ -68,66 +68,43 @@ The Gluko frontend is a Next.js 14 application using the App Router. It communic
 
 ---
 
-## 4. Running with Docker (Recommended)
+## 4. Setup and Running
 
-**You do not run docker-compose from this directory.** The `docker-compose.yml` lives in `gluko-backend/` and orchestrates all three services (frontend, backend, database) together.
+The frontend runs locally with Node.js — no Docker needed. The backend runs separately in Docker (see `gluko-backend/README.md`).
 
-```bash
-# From the gluko-backend/ directory:
-docker compose up --build
-```
-
-The frontend will be available at http://localhost:3000.
-
-**Why this approach:**
-- Hot-reload works via the volume mount: `../gluko-frontend:/app`
-- The `node_modules` and `.next` directories are kept inside the container via anonymous volumes, preventing conflicts with any local installation
-- Environment variables from `gluko-backend/.env` are passed through
-
-**Rebuilding the frontend container** (required after changes to `package.json`):
+### Step 1 - Clone the repository
 
 ```bash
-# From gluko-backend/
-docker compose build --no-cache frontend
-docker compose up
-```
-
----
-
-## 5. Running Locally Without Docker
-
-Use this approach if you want faster iteration on frontend code without running the full Docker stack.
-
-### Step 1 - Install dependencies
-
-```bash
+git clone git@github-uts:AI-Studio-Temporary/gluko-frontend.git
 cd gluko-frontend
+```
+
+### Step 2 - Install dependencies
+
+```bash
 npm install
 ```
 
-### Step 2 - Create a local environment file
+### Step 3 - Create a local environment file
 
 ```bash
-# Create .env.local (Next.js reads this automatically, it is git-ignored)
+# .env.local is loaded automatically by Next.js and is git-ignored
 echo "NEXT_PUBLIC_API_URL=http://localhost:8000/api" > .env.local
 ```
 
-### Step 3 - Start the development server
+### Step 4 - Start the development server
 
 ```bash
 npm run dev
 ```
 
-The app will be available at http://localhost:3000.
+The app will be available at http://localhost:3000 with hot-reload enabled.
 
-> **Note:** When running the frontend locally without Docker, you still need the backend running. Either run the full `docker compose up` from `gluko-backend/` (which also starts the frontend in Docker), or run only the backend and database services:
->
+> **Note:** The backend must be running for API calls to work. Start it first:
 > ```bash
-> # From gluko-backend/
-> docker compose up db backend
+> # In a separate console, from gluko-backend/
+> docker compose up
 > ```
->
-> Then run the frontend locally with `npm run dev`.
 
 ---
 
