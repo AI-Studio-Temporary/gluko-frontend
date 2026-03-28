@@ -104,3 +104,41 @@ export const authApi = {
       body: JSON.stringify({ refresh: refreshToken }),
     }, accessToken),
 }
+
+// ── Profile types ───────────────────────────────────────
+export interface UserProfile {
+  first_name: string
+  last_name: string
+  date_of_birth: string | null
+  gender: string
+  weight_kg: string | null
+  height_cm: string | null
+  diabetes_type: string
+  diagnosis_year: number | null
+  on_insulin: boolean
+  insulin_regimen: string
+  insulin_type: string
+  insulin_to_carb_ratio: string | null
+  insulin_sensitivity_factor: string | null
+  target_bg_min: string | null
+  target_bg_max: string | null
+  last_hba1c: string | null
+  monitoring_method: string
+  cgm_device: string
+  other_medications: string
+  other_conditions: string
+  dietary_restrictions: string
+  activity_level: string
+  management_goals: string
+}
+
+export const profileApi = {
+  get: (token: string) =>
+    request<UserProfile>('/auth/profile/', {}, token),
+
+  update: (token: string, data: Partial<UserProfile>) =>
+    request<UserProfile>('/auth/profile/', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }, token),
+}
