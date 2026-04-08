@@ -14,6 +14,7 @@ import {
   UserCircle,
   ClipboardList,
   Calculator,
+  TrendingUp,
   Loader2,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -230,8 +231,9 @@ export default function DashboardPage() {
             )}
 
             {/* Action cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
               <NavCard href="/logbook" icon={ClipboardList} label="Logbook" color="bg-blue-50 text-blue-600 group-hover:bg-blue-100" />
+              <NavCard href="/trends" icon={TrendingUp} label="Trends" color="bg-cyan-50 text-cyan-600 group-hover:bg-cyan-100" />
               <NavCard href="/bolus-calculator" icon={Calculator} label="Bolus Calc" color="bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100" />
               <NavCard href="/tutor" icon={MessageSquare} label="AI Tutor" color="bg-violet-50 text-violet-600 group-hover:bg-violet-100" />
               <NavCard href="/profile" icon={UserCircle} label="Profile" color="bg-orange-50 text-orange-600 group-hover:bg-orange-100" />
