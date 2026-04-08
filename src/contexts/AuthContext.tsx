@@ -62,14 +62,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const tokens = await authApi.login(email, password)
     localStorage.setItem(REFRESH_KEY, tokens.refresh)
     setAuth({ id: 0, email }, tokens.access)
-    router.push('/dashboard')
+    router.push('/')
   }, [router])
 
   const register = useCallback(async (email: string, password: string, passwordConfirm: string) => {
     const { user, tokens } = await authApi.register(email, password, passwordConfirm)
     localStorage.setItem(REFRESH_KEY, tokens.refresh)
     setAuth(user, tokens.access)
-    router.push('/dashboard')
+    router.push('/')
   }, [router])
 
   const logout = useCallback(async () => {

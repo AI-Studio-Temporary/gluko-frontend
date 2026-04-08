@@ -85,23 +85,11 @@ export default function TrendsPage() {
   const s = data?.summary
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-      {/* Topbar */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-100 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 transition-colors">
-              <ArrowLeft className="w-4 h-4 text-slate-600" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600">
-                <Activity className="w-4 h-4 text-white" strokeWidth={2.5} />
-              </div>
-              <span className="font-bold text-slate-900 text-lg">Trends</span>
-            </div>
-          </div>
-          {/* Period selector */}
-          <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-slate-900">Trends</h1>
+        {/* Period selector */}
+        <div className="flex gap-1 bg-slate-100 rounded-lg p-0.5">
             {[7, 14, 30].map(d => (
               <button
                 key={d}
@@ -116,10 +104,7 @@ export default function TrendsPage() {
               </button>
             ))}
           </div>
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      </div>
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
@@ -225,7 +210,6 @@ export default function TrendsPage() {
             </div>
           </>
         )}
-      </main>
     </div>
   )
 }
