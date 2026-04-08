@@ -55,6 +55,8 @@ export interface ChatMessage {
   id: number
   role: 'user' | 'assistant' | 'system'
   content: string
+  agent_used?: string
+  intent?: string
   created_at: string
 }
 
