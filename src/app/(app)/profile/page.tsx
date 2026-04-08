@@ -218,51 +218,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
-      {/* Topbar */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-100 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4 text-slate-600" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600">
-                <Activity className="w-4 h-4 text-white" strokeWidth={2.5} />
-              </div>
-              <span className="font-bold text-slate-900 text-lg">My Profile</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {user?.email && (
-              <span className="text-sm text-slate-500 hidden sm:block">{user.email}</span>
-            )}
-            <Button
-              onClick={handleSave}
-              disabled={isSaving}
-              size="sm"
-              className="gap-1.5 bg-blue-600 hover:bg-blue-700"
-            >
-              {saved ? (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Saved
-                </>
-              ) : (
-                <>
-                  <Save className="w-3.5 h-3.5" />
-                  {isSaving ? 'Saving…' : 'Save'}
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold text-slate-900">My Profile</h1>
+        <Button onClick={handleSave} disabled={isSaving} size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-700">
+          {saved ? (<><CheckCircle2 className="w-3.5 h-3.5" />Saved</>) : (<><Save className="w-3.5 h-3.5" />{isSaving ? 'Saving…' : 'Save'}</>)}
+        </Button>
+      </div>
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
             {error}
@@ -534,7 +496,6 @@ export default function ProfilePage() {
             )}
           </Button>
         </div>
-      </main>
     </div>
   )
 }
