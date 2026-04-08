@@ -39,7 +39,7 @@ async function request<T>(
     throw new Error(error.detail || error.email?.[0] || error.password?.[0] || 'Request failed')
   }
 
-  if (res.status === 205) return undefined as T
+  if (res.status === 204 || res.status === 205) return undefined as T
   return res.json()
 }
 
@@ -103,6 +103,110 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify({ refresh: refreshToken }),
     }, accessToken),
+}
+
+// ── Log types ──────────────────────────────────────────
+
+export interface GlucoseLog {
+  id: number
+  value_mgdl: number
+  measurement_context: string
+  notes: string
+  logged_at: string
+}
+
+export interface InsulinLog {
+  id: number
+  units: string
+  insulin_type: string
+  insulin_brand: string
+  injection_site: string
+  notes: string
+  logged_at: string
+}
+
+export interface MealLog {
+  id: number
+  description: string
+  estimated_carbs: string | null
+  carb_source: string
+  image_url: string
+  meal_type: string
+  notes: string
+  logged_at: string
+}
+
+export interface SportLog {
+  id: number
+  activity_type: string
+  duration_min: number
+  intensity: string
+  glucose_before: number | null
+  glucose_after: number | null
+  notes: string
+  logged_at: string
+}
+
+export interface BolusResult {
+  id: number
+  meal_dose: number
+  correction_dose: number
+  total_dose: number
+  formula: { meal: string; correction: string }
+  disclaimer: string
+}
+
+export interface BolusCalculation {
+  id: number
+  carbohydrates_g: string
+  current_glucose: string
+  target_glucose: string
+  icr_used: string
+  isf_used: string
+  meal_dose: string
+  correction_dose: string
+  total_dose: string
+  calculated_at: string
+}
+
+export const logsApi = {
+  getGlucose: (token: string, date?: string) =>
+    request<GlucoseLog[]>(`/logs/glucose/${date ? `?date=${date}` : ''}`, {}, token),
+  createGlucose: (token: string, data: Partial<GlucoseLog>) =>
+    request<GlucoseLog>('/logs/glucose/', { method: 'POST', body: JSON.stringify(data) }, token),
+  deleteGlucose: (token: string, id: number) =>
+    request<void>(`/logs/glucose/${id}/`, { method: 'DELETE' }, token),
+
+  getInsulin: (token: string, date?: string) =>
+    request<InsulinLog[]>(`/logs/insulin/${date ? `?date=${date}` : ''}`, {}, token),
+  createInsulin: (token: string, data: Partial<InsulinLog>) =>
+    request<InsulinLog>('/logs/insulin/', { method: 'POST', body: JSON.stringify(data) }, token),
+  deleteInsulin: (token: string, id: number) =>
+    request<void>(`/logs/insulin/${id}/`, { method: 'DELETE' }, token),
+
+  getMeals: (token: string, date?: string) =>
+    request<MealLog[]>(`/logs/meals/${date ? `?date=${date}` : ''}`, {}, token),
+  createMeal: (token: string, data: Partial<MealLog>) =>
+    request<MealLog>('/logs/meals/', { method: 'POST', body: JSON.stringify(data) }, token),
+  deleteMeal: (token: string, id: number) =>
+    request<void>(`/logs/meals/${id}/`, { method: 'DELETE' }, token),
+
+  getSport: (token: string, date?: string) =>
+    request<SportLog[]>(`/logs/sport/${date ? `?date=${date}` : ''}`, {}, token),
+  createSport: (token: string, data: Partial<SportLog>) =>
+    request<SportLog>('/logs/sport/', { method: 'POST', body: JSON.stringify(data) }, token),
+  deleteSport: (token: string, id: number) =>
+    request<void>(`/logs/sport/${id}/`, { method: 'DELETE' }, token),
+}
+
+export const bolusApi = {
+  calculate: (token: string, carbohydrates_g: string, current_glucose: string) =>
+    request<BolusResult>('/logs/bolus/calculate/', {
+      method: 'POST',
+      body: JSON.stringify({ carbohydrates_g, current_glucose }),
+    }, token),
+  getHistory: (token: string) =>
+    request<BolusCalculation[]>('/logs/bolus/history/', {}, token),
 }
 
 // ── Profile types ───────────────────────────────────────
