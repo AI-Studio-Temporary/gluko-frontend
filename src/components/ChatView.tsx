@@ -67,12 +67,12 @@ function MessageBubble({ message }: { message: ChatMessage }) {
           <Activity className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
         </div>
       )}
-      <div className="space-y-1">
+      <div className="space-y-1 min-w-0">
         {!isUser && message.agent_used && <AgentBadge agentUsed={message.agent_used} />}
         <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
           isUser
             ? 'bg-blue-600 text-white rounded-tr-sm whitespace-pre-wrap'
-            : 'bg-white border border-slate-100 text-slate-700 rounded-tl-sm shadow-sm prose prose-sm prose-slate max-w-none'
+            : 'bg-white border border-slate-100 text-slate-700 rounded-tl-sm shadow-sm'
         }`}>
           {isUser ? message.content : (
             <ReactMarkdown
@@ -80,8 +80,8 @@ function MessageBubble({ message }: { message: ChatMessage }) {
                 p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
                 strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
                 em: ({ children }) => <em className="italic">{children}</em>,
-                ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
-                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 last:mb-0">{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 last:mb-0">{children}</ol>,
                 li: ({ children }) => <li className="mb-0.5">{children}</li>,
               }}
             >
@@ -150,12 +150,12 @@ export default function ChatView({ sessionId }: { sessionId?: number }) {
 
     // Create session if needed
     let sid = currentSessionId
+    let isNewSession = false
     if (!sid) {
       const session = await chatApi.createSession(accessToken)
       sid = session.id
       setCurrentSessionId(sid)
-      // Navigate to the session URL so sidebar updates
-      router.push(`/chat/${sid}`)
+      isNewSession = true
     }
 
     const userMsg: ChatMessage = {
@@ -184,6 +184,11 @@ export default function ChatView({ sessionId }: { sessionId?: number }) {
       setIsSending(false)
       setThinkingAgent(undefined)
       inputRef.current?.focus()
+    }
+
+    // Navigate AFTER the message exchange so the component doesn't remount mid-flight
+    if (isNewSession) {
+      router.replace(`/chat/${sid}`)
     }
   }
 
