@@ -225,9 +225,34 @@ export interface DashboardSummary {
   }
 }
 
+export interface TrendDay {
+  date: string
+  glucose_avg: number | null
+  glucose_min: number | null
+  glucose_max: number | null
+  glucose_count: number
+  insulin_total: number
+  carbs_total: number
+  sport_minutes: number
+  sport_count: number
+}
+
+export interface TrendsData {
+  period_days: number
+  daily: TrendDay[]
+  summary: {
+    glucose_avg: number | null
+    glucose_in_range_pct: number | null
+    insulin_avg_daily: number | null
+    carbs_avg_daily: number | null
+  }
+}
+
 export const dashboardApi = {
   getSummary: (token: string) =>
     request<DashboardSummary>('/logs/dashboard/summary/', {}, token),
+  getTrends: (token: string, days: number = 7) =>
+    request<TrendsData>(`/logs/dashboard/trends/?days=${days}`, {}, token),
 }
 
 export const bolusApi = {
