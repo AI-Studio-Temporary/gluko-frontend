@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { chatApi, type ChatMessage } from '@/lib/api'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import ReactMarkdown from 'react-markdown'
 import {
   Activity, Send, BookOpen, Utensils, ClipboardList,
   Calculator, Shield, Bot, Loader2,
@@ -68,12 +69,25 @@ function MessageBubble({ message }: { message: ChatMessage }) {
       )}
       <div className="space-y-1">
         {!isUser && message.agent_used && <AgentBadge agentUsed={message.agent_used} />}
-        <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+        <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
           isUser
-            ? 'bg-blue-600 text-white rounded-tr-sm'
-            : 'bg-white border border-slate-100 text-slate-700 rounded-tl-sm shadow-sm'
+            ? 'bg-blue-600 text-white rounded-tr-sm whitespace-pre-wrap'
+            : 'bg-white border border-slate-100 text-slate-700 rounded-tl-sm shadow-sm prose prose-sm prose-slate max-w-none'
         }`}>
-          {message.content}
+          {isUser ? message.content : (
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                em: ({ children }) => <em className="italic">{children}</em>,
+                ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+                li: ({ children }) => <li className="mb-0.5">{children}</li>,
+              }}
+            >
+              {message.content}
+            </ReactMarkdown>
+          )}
         </div>
       </div>
     </div>
