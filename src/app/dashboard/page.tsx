@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { Activity, LogOut, Droplets, TrendingUp, Utensils, Clock, MessageSquare, UserCircle } from 'lucide-react'
+import { Activity, LogOut, Droplets, TrendingUp, Utensils, Clock, MessageSquare, UserCircle, ClipboardList, Calculator } from 'lucide-react'
 import Link from 'next/link'
 
 function StatCard({
@@ -107,26 +107,50 @@ export default function DashboardPage() {
 
         {/* Action cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link href="/tutor" className="block group">
+          <Link href="/logbook" className="block group">
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-blue-200 hover:shadow-md transition-all h-full">
               <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 mx-auto mb-4 group-hover:bg-blue-100 transition-colors">
-                <MessageSquare className="w-8 h-8 text-blue-600" />
+                <ClipboardList className="w-8 h-8 text-blue-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-2">Logbook</h2>
+              <p className="text-sm text-slate-500 max-w-sm mx-auto">
+                Log your blood glucose, insulin doses, meals, and sport activity.
+              </p>
+            </div>
+          </Link>
+
+          <Link href="/bolus-calculator" className="block group">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-emerald-200 hover:shadow-md transition-all h-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 mx-auto mb-4 group-hover:bg-emerald-100 transition-colors">
+                <Calculator className="w-8 h-8 text-emerald-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-2">Bolus Calculator</h2>
+              <p className="text-sm text-slate-500 max-w-sm mx-auto">
+                Calculate your insulin dose based on carbs and current glucose.
+              </p>
+            </div>
+          </Link>
+
+          <Link href="/tutor" className="block group">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-violet-200 hover:shadow-md transition-all h-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-violet-50 mx-auto mb-4 group-hover:bg-violet-100 transition-colors">
+                <MessageSquare className="w-8 h-8 text-violet-600" />
               </div>
               <h2 className="text-lg font-semibold text-slate-900 mb-2">AI Tutor</h2>
               <p className="text-sm text-slate-500 max-w-sm mx-auto">
-                Chat with Gluko — your AI diabetes management assistant. Ask questions about nutrition, blood sugar, and more.
+                Chat with Gluko — your AI diabetes management assistant.
               </p>
             </div>
           </Link>
 
           <Link href="/profile" className="block group">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-violet-200 hover:shadow-md transition-all h-full">
-              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-violet-50 mx-auto mb-4 group-hover:bg-violet-100 transition-colors">
-                <UserCircle className="w-8 h-8 text-violet-600" />
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-orange-200 hover:shadow-md transition-all h-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-50 mx-auto mb-4 group-hover:bg-orange-100 transition-colors">
+                <UserCircle className="w-8 h-8 text-orange-600" />
               </div>
               <h2 className="text-lg font-semibold text-slate-900 mb-2">My Profile</h2>
               <p className="text-sm text-slate-500 max-w-sm mx-auto">
-                Set up your personal details and diabetes data so Gluko can give you personalised advice.
+                Set up your diabetes data for personalised advice.
               </p>
             </div>
           </Link>
