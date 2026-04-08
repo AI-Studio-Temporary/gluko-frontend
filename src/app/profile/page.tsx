@@ -189,7 +189,7 @@ export default function ProfilePage() {
       .finally(() => setIsLoading(false))
   }, [accessToken])
 
-  const set = (field: keyof UserProfile) => (value: string | boolean | null) =>
+  const set = (field: keyof UserProfile) => (value: string | boolean | number | null) =>
     setProfile(prev => ({ ...prev, [field]: value }))
 
   const handleSave = async () => {
