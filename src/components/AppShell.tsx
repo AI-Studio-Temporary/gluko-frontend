@@ -27,7 +27,7 @@ const NAV_ITEMS = [
 ]
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { accessToken, user, logout } = useAuth()
+  const { accessToken, user, logout, isLoading } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
   const [sessions, setSessions] = useState<ChatSession[]>([])
@@ -52,6 +52,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const refreshSessions = () => {
     if (!accessToken) return
     chatApi.getSessions(accessToken).then(setSessions).catch(() => {})
+  }
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+            <Activity className="w-4 h-4 text-white animate-pulse" strokeWidth={2.5} />
+          </div>
+          <span className="font-bold text-slate-900 text-lg">Gluko</span>
+        </div>
+      </div>
+    )
   }
 
   return (
