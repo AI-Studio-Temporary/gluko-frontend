@@ -199,6 +199,37 @@ export const logsApi = {
     request<void>(`/logs/sport/${id}/`, { method: 'DELETE' }, token),
 }
 
+export interface DashboardSummary {
+  date: string
+  glucose: {
+    latest: { value_mgdl: number; context: string; logged_at: string } | null
+    count: number
+    avg: number | null
+    min: number | null
+    max: number | null
+  }
+  insulin: {
+    total_units: number
+    count: number
+    entries: { id: number; units: string; insulin_type: string; logged_at: string }[]
+  }
+  meals: {
+    total_carbs: number
+    count: number
+    entries: { id: number; description: string; estimated_carbs: string | null; meal_type: string; logged_at: string }[]
+  }
+  sport: {
+    total_minutes: number
+    count: number
+    entries: { id: number; activity_type: string; duration_min: number; intensity: string; logged_at: string }[]
+  }
+}
+
+export const dashboardApi = {
+  getSummary: (token: string) =>
+    request<DashboardSummary>('/logs/dashboard/summary/', {}, token),
+}
+
 export const bolusApi = {
   calculate: (token: string, carbohydrates_g: string, current_glucose: string) =>
     request<BolusResult>('/logs/bolus/calculate/', {
