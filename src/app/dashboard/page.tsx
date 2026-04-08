@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { Activity, LogOut, Droplets, TrendingUp, Utensils, Clock, MessageSquare } from 'lucide-react'
+import { Activity, LogOut, Droplets, TrendingUp, Utensils, Clock, MessageSquare, UserCircle } from 'lucide-react'
 import Link from 'next/link'
 
 function StatCard({
@@ -50,6 +50,12 @@ export default function DashboardPage() {
             {user?.email && (
               <span className="text-sm text-slate-500 hidden sm:block">{user.email}</span>
             )}
+            <Link href="/profile">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <UserCircle className="w-3.5 h-3.5" />
+                Profile
+              </Button>
+            </Link>
             <Button variant="outline" size="sm" onClick={logout} className="gap-1.5">
               <LogOut className="w-3.5 h-3.5" />
               Sign out
@@ -99,18 +105,32 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* AI Tutor card */}
-        <Link href="/tutor" className="block group">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-blue-200 hover:shadow-md transition-all">
-            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 mx-auto mb-4 group-hover:bg-blue-100 transition-colors">
-              <MessageSquare className="w-8 h-8 text-blue-600" />
+        {/* Action cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link href="/tutor" className="block group">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-blue-200 hover:shadow-md transition-all h-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 mx-auto mb-4 group-hover:bg-blue-100 transition-colors">
+                <MessageSquare className="w-8 h-8 text-blue-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-2">AI Tutor</h2>
+              <p className="text-sm text-slate-500 max-w-sm mx-auto">
+                Chat with Gluko — your AI diabetes management assistant. Ask questions about nutrition, blood sugar, and more.
+              </p>
             </div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-2">AI Tutor</h2>
-            <p className="text-sm text-slate-500 max-w-sm mx-auto">
-              Chat with Gluko — your AI diabetes management assistant. Ask questions about nutrition, blood sugar, and more.
-            </p>
-          </div>
-        </Link>
+          </Link>
+
+          <Link href="/profile" className="block group">
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 text-center hover:border-violet-200 hover:shadow-md transition-all h-full">
+              <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-violet-50 mx-auto mb-4 group-hover:bg-violet-100 transition-colors">
+                <UserCircle className="w-8 h-8 text-violet-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-slate-900 mb-2">My Profile</h2>
+              <p className="text-sm text-slate-500 max-w-sm mx-auto">
+                Set up your personal details and diabetes data so Gluko can give you personalised advice.
+              </p>
+            </div>
+          </Link>
+        </div>
       </main>
     </div>
   )
