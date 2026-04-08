@@ -70,6 +70,9 @@ export const chatApi = {
       body: JSON.stringify({ title: title || '' }),
     }, token),
 
+  deleteSession: (token: string, sessionId: number) =>
+    request<void>(`/chat/sessions/${sessionId}/`, { method: 'DELETE' }, token),
+
   getMessages: (token: string, sessionId: number) =>
     request<ChatMessage[]>(`/chat/sessions/${sessionId}/messages/`, {}, token),
 
