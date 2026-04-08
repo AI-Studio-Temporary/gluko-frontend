@@ -3,20 +3,56 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { chatApi, type ChatMessage, type ChatSession } from '@/lib/api'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Activity, ArrowLeft, Send, Plus, MessageSquare } from 'lucide-react'
+import {
+  Activity, ArrowLeft, Send, Plus, MessageSquare,
+  Droplets, Syringe, Utensils, Dumbbell, Calculator,
+  BookOpen, Shield, ClipboardList, Bot,
+} from 'lucide-react'
 import Link from 'next/link'
 
-function TypingIndicator() {
+// ── Agent display config ────────────────────────────────────
+
+const AGENT_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string }> = {
+  tutor:            { label: 'Tutor',            icon: BookOpen,      color: 'bg-blue-100 text-blue-700' },
+  carb_estimator:   { label: 'Carb Estimator',   icon: Utensils,      color: 'bg-orange-100 text-orange-700' },
+  log_agent:        { label: 'Log Agent',         icon: ClipboardList, color: 'bg-emerald-100 text-emerald-700' },
+  bolus_calculator: { label: 'Bolus Calculator',  icon: Calculator,    color: 'bg-violet-100 text-violet-700' },
+  summary:          { label: 'Summary',           icon: ClipboardList, color: 'bg-cyan-100 text-cyan-700' },
+  safety_gate:      { label: 'Safety Alert',      icon: Shield,        color: 'bg-red-100 text-red-700' },
+  orchestrator:     { label: 'Gluko',             icon: Bot,           color: 'bg-slate-100 text-slate-700' },
+}
+
+function AgentBadge({ agentUsed }: { agentUsed?: string }) {
+  if (!agentUsed) return null
+  const config = AGENT_CONFIG[agentUsed] || { label: agentUsed, icon: Bot, color: 'bg-slate-100 text-slate-600' }
+  const Icon = config.icon
+
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${config.color}`}>
+      <Icon className="w-2.5 h-2.5" />
+      {config.label}
+    </span>
+  )
+}
+
+function TypingIndicator({ agentLabel }: { agentLabel?: string }) {
   return (
     <div className="flex items-start gap-3 max-w-[80%]">
       <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
         <Activity className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
       </div>
-      <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-        <div className="flex gap-1.5">
-          <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:0ms]" />
-          <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:150ms]" />
-          <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:300ms]" />
+      <div>
+        {agentLabel && (
+          <p className="text-[10px] text-slate-400 mb-1 ml-1">
+            Using <span className="font-medium text-slate-500">{agentLabel}</span>...
+          </p>
+        )}
+        <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+          <div className="flex gap-1.5">
+            <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:0ms]" />
+            <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:150ms]" />
+            <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce [animation-delay:300ms]" />
+          </div>
         </div>
       </div>
     </div>
@@ -33,14 +69,19 @@ function MessageBubble({ message }: { message: ChatMessage }) {
           <Activity className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
         </div>
       )}
-      <div
-        className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
-          isUser
-            ? 'bg-blue-600 text-white rounded-tr-sm'
-            : 'bg-white border border-slate-100 text-slate-700 rounded-tl-sm shadow-sm'
-        }`}
-      >
-        {message.content}
+      <div className="space-y-1">
+        {!isUser && message.agent_used && (
+          <AgentBadge agentUsed={message.agent_used} />
+        )}
+        <div
+          className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
+            isUser
+              ? 'bg-blue-600 text-white rounded-tr-sm'
+              : 'bg-white border border-slate-100 text-slate-700 rounded-tl-sm shadow-sm'
+          }`}
+        >
+          {message.content}
+        </div>
       </div>
     </div>
   )
@@ -54,6 +95,7 @@ export default function TutorPage() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSending, setIsSending] = useState(false)
+  const [thinkingAgent, setThinkingAgent] = useState<string | undefined>(undefined)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -96,6 +138,18 @@ export default function TutorPage() {
     setSidebarOpen(false)
   }
 
+  // Guess which agent will handle the message (for thinking indicator)
+  const guessAgent = (text: string): string => {
+    const t = text.toLowerCase()
+    if (/\b(ate|eat|had|lunch|dinner|breakfast|snack|sandwich|pizza|rice|chicken)\b/.test(t)) return 'Carb Estimator'
+    if (/\b(glucose|bg|blood sugar|sugar)\s*(is|was|at|:)?\s*\d/.test(t)) return 'Log Agent'
+    if (/\b(took|injected|insulin|units?|novorapid|humalog|lantus)\b/.test(t)) return 'Log Agent'
+    if (/\b(ran|run|walk|swim|cycl|exercise|gym|yoga|sport)\b/.test(t)) return 'Log Agent'
+    if (/\b(bolus|dose|how much insulin|calculate)\b/.test(t)) return 'Bolus Calculator'
+    if (/\b(summary|show my day|today|overview)\b/.test(t)) return 'Summary'
+    return 'Tutor'
+  }
+
   const sendMessage = async () => {
     const text = input.trim()
     if (!text || !accessToken || isSending) return
@@ -118,6 +172,7 @@ export default function TutorPage() {
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setIsSending(true)
+    setThinkingAgent(guessAgent(text))
 
     // Reset textarea height
     if (inputRef.current) inputRef.current.style.height = 'auto'
@@ -136,6 +191,7 @@ export default function TutorPage() {
       ])
     } finally {
       setIsSending(false)
+      setThinkingAgent(undefined)
       inputRef.current?.focus()
     }
   }
@@ -168,7 +224,7 @@ export default function TutorPage() {
             <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center">
               <Activity className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
             </div>
-            <span className="font-bold text-slate-900">AI Tutor</span>
+            <span className="font-bold text-slate-900">Gluko Chat</span>
           </div>
           <button
             onClick={createSession}
@@ -226,7 +282,7 @@ export default function TutorPage() {
             <MessageSquare className="w-4 h-4 text-slate-600" />
           </button>
           <h1 className="text-sm font-semibold text-slate-700">
-            {activeSession?.title || 'Gluko AI Tutor'}
+            {activeSession?.title || 'Gluko Chat'}
           </h1>
         </header>
 
@@ -238,15 +294,18 @@ export default function TutorPage() {
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mb-4">
                 <Activity className="w-7 h-7 text-blue-600" />
               </div>
-              <h2 className="text-lg font-semibold text-slate-900 mb-1">Gluko AI Tutor</h2>
-              <p className="text-sm text-slate-500 text-center max-w-xs mb-6">
-                Ask me anything about diabetes management, nutrition, or blood sugar control.
+              <h2 className="text-lg font-semibold text-slate-900 mb-1">Gluko Chat</h2>
+              <p className="text-sm text-slate-500 text-center max-w-sm mb-6">
+                Your AI diabetes assistant. Log meals, glucose, insulin — or ask questions about diabetes management.
               </p>
-              <div className="flex flex-wrap gap-2 justify-center max-w-md">
+              <div className="flex flex-wrap gap-2 justify-center max-w-lg">
                 {[
-                  'What is a normal blood sugar level?',
-                  'How do carbs affect glucose?',
-                  'Tips for managing Type 2 diabetes',
+                  'I just had a chicken sandwich',
+                  'My glucose is 145',
+                  'Took 4 units of Novorapid',
+                  'How much insulin for 60g carbs?',
+                  'Show my day',
+                  'What causes post-meal spikes?',
                 ].map(q => (
                   <button
                     key={q}
@@ -266,7 +325,7 @@ export default function TutorPage() {
               {messages.map(msg => (
                 <MessageBubble key={msg.id} message={msg} />
               ))}
-              {isSending && <TypingIndicator />}
+              {isSending && <TypingIndicator agentLabel={thinkingAgent} />}
               <div ref={messagesEndRef} />
             </div>
           )}
@@ -280,7 +339,7 @@ export default function TutorPage() {
               value={input}
               onChange={handleInput}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Gluko anything..."
+              placeholder="Log a meal, report glucose, or ask a question..."
               rows={1}
               className="flex-1 resize-none rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 transition-colors"
             />
