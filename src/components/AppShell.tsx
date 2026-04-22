@@ -78,7 +78,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="h-screen flex bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+    <div className="h-screen flex overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-100 flex flex-col transition-transform duration-200 md:relative md:translate-x-0 ${
@@ -196,7 +196,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Mobile header (only on non-chat pages, chat has its own) */}
         {!isChat && (
           <header className="h-14 border-b border-slate-100 bg-white/80 backdrop-blur-sm flex items-center px-4 gap-3 flex-shrink-0 md:hidden">
@@ -225,7 +225,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </header>
         )}
 
-        <div className={`flex-1 ${isChat ? 'flex flex-col' : 'overflow-y-auto'}`}>
+        <div className={`flex-1 min-h-0 ${isChat ? 'flex flex-col' : 'overflow-y-auto'}`}>
           {children}
         </div>
       </div>
