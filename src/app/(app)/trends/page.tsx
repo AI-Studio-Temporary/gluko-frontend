@@ -130,7 +130,6 @@ export default function TrendsPage() {
                     <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} domain={[50, 'auto']} />
                     <Tooltip
                       contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }}
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       formatter={(value: any, name: any) => {
                         const labels: Record<string, string> = { glucose_avg: 'Avg', glucose_min: 'Min', glucose_max: 'Max' }
                         return [value ? `${value} mg/dL` : '--', labels[name] || name]
