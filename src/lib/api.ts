@@ -81,6 +81,30 @@ export const chatApi = {
       method: 'POST',
       body: JSON.stringify({ message }),
     }, token),
+
+  uploadMedia: async (
+    token: string,
+    sessionId: number,
+    kind: 'image' | 'audio',
+    file: Blob,
+    filename: string,
+    hint?: string,
+  ): Promise<ChatMessage> => {
+    const fd = new FormData()
+    fd.append(kind, file, filename)
+    if (hint) fd.append('message', hint)
+
+    const res = await fetch(`${API_BASE}/chat/sessions/${sessionId}/upload/`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` }, // no Content-Type — browser sets the boundary
+      body: fd,
+    })
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({ detail: 'Upload failed' }))
+      throw new Error(e.detail || 'Upload failed')
+    }
+    return res.json()
+  },
 }
 
 // ── Auth ────────────────────────────────────────────────
